@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('my_smartwork_app.urls') ),
@@ -29,4 +31,4 @@ urlpatterns = [
     path('Post_order_api/',include('my_smartwork_app.urls') ),
     path('Approved_order_api/', include('my_smartwork_app.urls')),
     path('Decline_order_api/',include('my_smartwork_app.urls' ))
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

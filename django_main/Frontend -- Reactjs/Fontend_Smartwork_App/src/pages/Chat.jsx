@@ -16,6 +16,7 @@ export default function Chat(){
     const [Addmessage, setAddmessage] = useState([]);
     const [Add_receivermessage, setAdd_receivermessage] = useState([]);
     const [Receiver, setReceiver] = useState('');
+    const [Image, setImage] = useState(null);
     
    
 
@@ -251,55 +252,58 @@ export default function Chat(){
         })
     }
 
-    async function Send_message(){
-
+    async function Send_message() {
         const now = new Date();
         const currentDate = now.toLocaleDateString();
         const currentTime = now.toLocaleTimeString();
-        let time = `${currentDate} - ${currentTime}`
+        let time = `${currentDate} - ${currentTime}`;
         let strReceiver = Receiver.toString();
-
-        if (Receiver === "" ){
-            alert('Choose Who You want to send message to..')
+    
+        if (Receiver === "") {
+            alert('Choose who you want to send the message to.');
+            return;
         }
-        
-        else{
-            const data = {
-                "Sender": FullName,
-                "Receiver": strReceiver,
-                "Message": Message,
-                "Sendingtime": time
+    
+        const formData = new FormData();
+        formData.append('Sender', FullName);
+        formData.append('Receiver', strReceiver);
+        formData.append('Message', Message);
+        formData.append('Sendingtime', time);
+        if (Image) {
+            formData.append('Image', Image);
+        }
+    
+        console.log(...formData); // To check the form data before sending
+    
+        const endpoint = `${import.meta.env.VITE_API_URL}api/Conversation`;
+        await fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => {
+            if (res.ok) {
+                return res.json();
             }
-            
-            const endpoint = `${import.meta.env.VITE_API_URL}api/Conversation`;
-            await fetch(endpoint,{
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res =>{
-                if(res.ok){
-                    return res.json();
-                }
-                if(res.status === 400){
+            if (res.status === 400) {
+                return res.json().then(data => {
                     alert(data.message);
-                }
-            })
-
-            .then(data =>{
-                if(data.message){
-                    console.log(data.conversation);
-                    setAddmessage(data.conversation);
-                    setMessage('');
-                   
-                }
-            })
-        }
+                });
+            }
+        })
+        .then(data => {
+            if (data.message) {
+                console.log(data.conversation);
+                setAddmessage(data.conversation);
+                setMessage('');
+                //setImage(null); // Clear the image after sending the message
+            }
+        });
     }
+    
 
-
+    function Image_value(event) {
+        setImage(event.target.files[0]);
+    }
 
 
     return(
@@ -378,8 +382,18 @@ export default function Chat(){
                             >
                         
                             {items.Message}
+                            
                             </div>
-                        
+                           
+                            {items.Image && (
+                                <img
+                                    src={`${import.meta.env.VITE_API_URL}${items.Image}`}
+                                    alt="Message Attachment"
+                                    className="mt-2"
+                                    style={{ maxWidth: "100px", maxHeight: "100px" }}
+                                />
+                            )}
+                                        
                             
                             <img
                             src={avataricon}
@@ -402,6 +416,14 @@ export default function Chat(){
                                 {items.Message}
                                 
                                 </div>
+                                {items.Image && (
+                                <img
+                                    src={`${import.meta.env.VITE_API_URL}${items.Image}`}
+                                    alt="Message Attachment"
+                                    className="mt-2"
+                                    style={{ maxWidth: "100px", maxHeight: "100px" }}
+                                />
+                            )}
                         </div>
                     )}
                     </div>
@@ -415,6 +437,16 @@ export default function Chat(){
                             type="text"
                             placeholder="type your message here..."
                         />
+                        <div class="rounded-md border border-indigo-500 bg-gray-50 p-2 shadow-md w-24">
+                            <label for="upload" class="flex flex-col items-center gap-1 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 fill-white stroke-indigo-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="text-gray-600 text-xs font-medium">Upload file</span>
+                            </label>
+                            <input id="upload" type="file" class="hidden" onChange={Image_value}/>
+                        </div>
+
                         <button onClick={Send_message} type="button" class="text-white bg-blue-300 hover:bg-blue-400 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xl px-5 py-2.5 ml-2 mb-2 dark:bg-blue-400 dark:hover:bg-blue-500 dark:focus:ring-blue-500">Send</button>
                     </div>
 

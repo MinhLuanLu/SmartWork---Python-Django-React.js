@@ -90,9 +90,10 @@ class Order(models.Model):
 
 class Conversation(models.Model):
     Sender = models.CharField(max_length=100)
-    Receiver = models.CharField(max_length=100)
-    Message = models.CharField(max_length=1000000)
+    Receiver = models.CharField(max_length=100,)
+    Message = models.CharField(max_length=1000000, blank=True)
     Sendingtime = models.CharField(max_length=100)
+    Image = models.ImageField(upload_to='conversation/Images', blank=True)
 
     def __str__(self):
         return f"Sender [{self.Sender} - Receiver [{self.Receiver}] - Sendingtime [{self.Sendingtime}]"

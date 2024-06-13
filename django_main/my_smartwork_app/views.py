@@ -397,14 +397,14 @@ def api_Conversation(request):
         message = ConversationSerializer(data=request.data)
         Sender = request.data.get('Sender')
         Receiver = request.data.get('Receiver')
-
+        Image = request.data.get('Image')
         check_sender = Conversation.objects.filter(Sender=Sender, Receiver=Receiver)
         
 
 
         if message.is_valid():
             message.save()
-        print(Receiver)
+        print(Image)
         serializer = ConversationSerializer(check_sender,many=True)
         return Response({"message": "Message has been sent", "conversation": serializer.data})
 

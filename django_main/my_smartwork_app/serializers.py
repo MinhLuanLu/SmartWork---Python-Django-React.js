@@ -73,7 +73,4 @@ class OrderSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conversation
-        fields = ["id", "Sender", "Receiver", "Message", "Sendingtime"]
-
-
-
+        fields = ["id", "Sender", "Receiver", "Message", "Sendingtime", "Image"]
