@@ -423,7 +423,7 @@ export default function Chat(){
                                     className="mt-2"
                                     style={{ maxWidth: "100px", maxHeight: "100px" }}
                                 />
-                            )}
+                                )}
                         </div>
                     )}
                     </div>
